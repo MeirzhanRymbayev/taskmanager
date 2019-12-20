@@ -1,6 +1,9 @@
 package kz.attractor.lab56.taskmanager.controller;
 
+import kz.attractor.lab56.taskmanager.dto.UserDto;
+import kz.attractor.lab56.taskmanager.model.Task;
 import kz.attractor.lab56.taskmanager.model.User;
+import kz.attractor.lab56.taskmanager.service.TaskService;
 import kz.attractor.lab56.taskmanager.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -12,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @AllArgsConstructor
 @Controller
@@ -20,8 +24,9 @@ public class UserController {
 
 
     private final UserService userService;
+    private final TaskService taskService;
 
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(method = RequestMethod.POST, value = "/")
     public ResponseEntity<?> register(@RequestBody User user, HttpServletRequest request) {
 
         User saved = userService.register(user);
@@ -42,6 +47,23 @@ public class UserController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(user);
+    }
+
+    @RequestMapping(method = RequestMethod.GET)
+    public ResponseEntity<?> findAll() {
+        List<UserDto> users = userService.findAll();
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(users);
+    }
+
+    @RequestMapping(value = "/{userId}/tasks", method = RequestMethod.GET)
+    public ResponseEntity<?> findAllUserTasks(@PathVariable Long userId) {
+
+        List<Task> tasks = taskService.findByUser_Id(userId);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(tasks);
     }
 
 
